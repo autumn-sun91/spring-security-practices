@@ -1,10 +1,9 @@
 package com.example.securitypractices.form;
 
+import java.security.Principal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.security.Principal;
 
 @Controller
 public class SampleController {
@@ -24,7 +23,6 @@ public class SampleController {
         model.addAttribute("message", "Info");
         return "info";
     }
-
 
     // 인가된 사용자가 접근 > Principal
     @GetMapping("/dashboard")
