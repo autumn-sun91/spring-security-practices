@@ -1,3 +1,5 @@
 spring:
   application:
     name: security-practices
+  jpa:
+    show-sql: true
