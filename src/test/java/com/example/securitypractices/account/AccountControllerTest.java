@@ -1,6 +1,9 @@
 package com.example.securitypractices.account;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,7 +41,7 @@ public class AccountControllerTest {
     @Test
     @WithMockUser(username = "user1", roles = "USER") // user() 함수와 동일한 효과
     public void admin_user() throws Exception {
-        mockMvc.perform(get("/admin")).andDo(print()).andExpect(status().isForbidden());
+        mockMvc.perform(get("/admin")).andDo(print()).andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -46,5 +49,15 @@ public class AccountControllerTest {
         mockMvc.perform(get("/admin").with(user("admin").roles("ADMIN")))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void login_success() throws Exception {
+        mockMvc.perform(formLogin().user("user1").password("123")).andExpect(authenticated());
+    }
+
+    @Test
+    public void login_fail() throws Exception {
+        mockMvc.perform(formLogin().user("user1").password("89012")).andExpect(unauthenticated());
     }
 }
