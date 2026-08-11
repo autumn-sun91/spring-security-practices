@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // SecurityFilterChain 은 spring security 내부 동작에서 FilterChainProxy 객체에서 filter 를 순회하면서 아래 설정한 값을 적용
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
@@ -40,6 +41,6 @@ public class SecurityConfig {
                 4, // Parallelism (threads)
                 32, // Hash length
                 Argon2.ID // Argon2 type (Argon2id is best for general password hashing)
-                ));
+        ));
     }
 }
