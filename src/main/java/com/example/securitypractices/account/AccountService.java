@@ -4,14 +4,18 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository; // rdbms, nosql 등등 구현하는거에따라 다름.
+    private final PasswordEncoder passwordEncoder;
 
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -28,5 +32,13 @@ public class AccountService implements UserDetailsService {
                 .password(account.getPassword())
                 .roles(account.getRole())
                 .build();
+    }
+
+    @Transactional
+    public void createNew(Account account) {
+        String encode = passwordEncoder.encode(account.getPassword());
+        account.setPassword(encode);
+
+        accountRepository.save(account);
     }
 }

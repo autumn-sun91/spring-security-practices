@@ -38,7 +38,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .dispatcherTypeMatchers(DispatcherType.ERROR)
                         .permitAll()
-                        .requestMatchers("/", "/info", "/h2-console")
+                        .requestMatchers("/", "/info", "/h2-console", "/signup")
                         .permitAll()
                         .requestMatchers("/admin")
                         .hasRole("ADMIN")
