@@ -3,6 +3,8 @@ package com.example.securitypractices.config;
 import com.password4j.Argon2Function;
 import com.password4j.types.Argon2;
 import jakarta.servlet.DispatcherType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.security.autoconfigure.web.StaticResourceLocation;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password4j.Argon2Password4jPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,6 +24,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SecurityConfig.class);
 
     // 5버전에는 AccessDecisionManager 로 관리
     // 6버전 이후에는 내부적으로 AuthorizationManager 가 관리
@@ -48,7 +53,19 @@ public class SecurityConfig {
                         .authenticated())
                 .formLogin(Customizer.withDefaults()) // security formLogin 을 사용할것인지?
                 .logout(logout -> logout.logoutSuccessUrl("/"))
-                .httpBasic(Customizer.withDefaults()); // 기본적인 인증 시스템을 사용, e.g.)Authorization: Basic XXXX(user1:123) 이렇게 base64로 인코딩, 반드시 https 사용 권장
+                .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/access-denied")
+                        .accessDeniedHandler(((request, response, accessDeniedException) -> {
+                            UserDetails principal = (UserDetails) SecurityContextHolder.getContext()
+                                    .getAuthentication()
+                                    .getPrincipal();
+                            String username = principal.getUsername();
+                            LOG.warn("{} is denied to access {}", username, request.getRequestURI());
+                            response.sendRedirect("/access-denied");
+                        })))
+                .httpBasic(Customizer.withDefaults()); // 기본적인 인증 시스템을 사용, e.g.)Authorization: Basic XXXX(user1:123) 이렇게
+        // base64로 인코딩,
+        // 반드시 https 사용 권장
 
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
         return http.build();
@@ -68,6 +85,6 @@ public class SecurityConfig {
                 4, // Parallelism (threads)
                 32, // Hash length
                 Argon2.ID // Argon2 type (Argon2id is best for general password hashing)
-        ));
+                ));
     }
 }
