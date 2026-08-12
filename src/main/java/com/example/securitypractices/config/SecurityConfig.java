@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated())
                 .formLogin(Customizer.withDefaults()) // security formLogin 을 사용할것인지?
+                .logout(logout -> logout.logoutSuccessUrl("/"))
                 .httpBasic(Customizer.withDefaults()); // 기본적인 인증 시스템을 사용
 
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
