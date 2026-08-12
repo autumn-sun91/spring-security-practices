@@ -48,7 +48,7 @@ public class SecurityConfig {
                         .authenticated())
                 .formLogin(Customizer.withDefaults()) // security formLogin 을 사용할것인지?
                 .logout(logout -> logout.logoutSuccessUrl("/"))
-                .httpBasic(Customizer.withDefaults()); // 기본적인 인증 시스템을 사용
+                .httpBasic(Customizer.withDefaults()); // 기본적인 인증 시스템을 사용, e.g.)Authorization: Basic XXXX(user1:123) 이렇게 base64로 인코딩, 반드시 https 사용 권장
 
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
         return http.build();
@@ -68,6 +68,6 @@ public class SecurityConfig {
                 4, // Parallelism (threads)
                 32, // Hash length
                 Argon2.ID // Argon2 type (Argon2id is best for general password hashing)
-                ));
+        ));
     }
 }
