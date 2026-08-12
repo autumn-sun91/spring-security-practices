@@ -2,6 +2,9 @@ package com.example.securitypractices.config;
 
 import com.password4j.Argon2Function;
 import com.password4j.types.Argon2;
+import jakarta.servlet.DispatcherType;
+import org.springframework.boot.security.autoconfigure.web.StaticResourceLocation;
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -9,6 +12,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password4j.Argon2Password4jPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -31,6 +35,8 @@ public class SecurityConfig {
 
         // 어떻게 인가 할것인지?
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .dispatcherTypeMatchers(DispatcherType.ERROR)
+                        .permitAll()
                         .requestMatchers("/", "/info", "/h2-console")
                         .permitAll()
                         .requestMatchers("/admin")
@@ -43,6 +49,12 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults()); // 기본적인 인증 시스템을 사용
 
         return http.build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web ->
+                web.ignoring().requestMatchers(PathRequest.toStaticResources().at(StaticResourceLocation.FAVICON)));
     }
 
     @Bean
