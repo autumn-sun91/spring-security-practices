@@ -1,5 +1,7 @@
 package com.example.securitypractices.form;
 
+import com.example.securitypractices.account.Account;
+import com.example.securitypractices.common.CurrentUser;
 import com.example.securitypractices.common.SecurityLogger;
 import java.security.Principal;
 import java.util.concurrent.Callable;
@@ -18,9 +20,9 @@ public class SampleController {
     }
 
     @GetMapping("/")
-    public String index(Model model, Principal principal) {
-        if (principal != null) {
-            model.addAttribute("message", "Hello, " + principal.getName());
+    public String index(Model model, @CurrentUser Account account) {
+        if (account != null) {
+            model.addAttribute("message", "Hello, " + account.getUsername());
         } else {
             model.addAttribute("message", "Hello, Spring Security");
         }

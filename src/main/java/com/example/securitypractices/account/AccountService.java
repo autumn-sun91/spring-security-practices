@@ -1,6 +1,5 @@
 package com.example.securitypractices.account;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,11 +26,8 @@ public class AccountService implements UserDetailsService {
         }
 
         // spring security 에서 미리 만들어놓은 User 클래스로 쉽게 변환 가능
-        return User.builder()
-                .username(account.getUsername())
-                .password(account.getPassword())
-                .roles(account.getRole())
-                .build();
+        // Principal 을 받는것이 아닌 최대한 도메인의 대한 정보로 맵핑 해서 가져올때 별도 Adapter 클래스 생성
+        return new UserAccount(account);
     }
 
     @Transactional
