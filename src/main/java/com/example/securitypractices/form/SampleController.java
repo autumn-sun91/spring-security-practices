@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class SampleController {
 
+    private final SampleService sampleService;
+
+    public SampleController(SampleService sampleService) {
+        this.sampleService = sampleService;
+    }
+
     @GetMapping("/")
     public String index(Model model, Principal principal) {
         if (principal != null) {
@@ -58,5 +64,14 @@ public class SampleController {
             SecurityLogger.log("Callable");
             return "Async Handler";
         };
+    }
+
+    @GetMapping("/async-service")
+    @ResponseBody
+    public String asyncService() {
+        SecurityLogger.log("MVC, before async service");
+        sampleService.asyncService();
+        SecurityLogger.log("MVC, after async service");
+        return "Async Service";
     }
 }
